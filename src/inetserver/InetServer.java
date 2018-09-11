@@ -40,20 +40,40 @@ public void run(){
     }
 }
 
+static void printRemoteAddress (String name, PrintStream out){
+    try{
+        out.println("Looking up " + name + "...");
+        InetAddress machine = InetAddress.getByName(name);
+        out.println("Host name : " + machine.getHostName());
+        out.println("Host IP : " + toText(machine.getAddress()));
+    }catch(UnknownHostException ex){
+        out.println("Failed in attempt to look  up " + name);
+    }
+}
 
-
-
-
-
-
+static String toText (byte ip[]) { /* Make portable for 128 bit format */
+ StringBuffer result = new StringBuffer ();
+ for (int i = 0; i < ip.length; ++ i) {
+ if (i > 0) result.append (".");
+ result.append (0xff & ip[i]);
+ }
+ return result.toString ();
+ }
+}
 
 public class InetServer {
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
-    }
     
+    public static void main(String[] args) throws IOException {
+       int q_len = 6;
+       int port = 1565;
+       Socket sock;
+       
+       ServerSocket servsock = new ServerSocket(port, q_len);
+       
+       System.out.println("John Berry's Iner server 1.8 starting up, listening at port 1565. \n");
+       while(true){
+           sock = servsock.accept();
+           new Worker(sock).start();
+       }
+    }
 }
